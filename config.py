@@ -57,11 +57,11 @@ PHOTO_CARD_TEMPLATE = BASE_DIR / "PhotoCard.png"
 
 # Alle foto-afmetingen en posities staan hier bij elkaar voor eenvoudige finetuning.
 PHOTO_LAYOUT = {
-    "width": 530,
+    "width": 471,
     "height": 400,
-    "photo1": {"x": 35, "y": 271},
-    "photo2": {"x": 35, "y": 700},
-    "photo3": {"x": 35, "y": 1129},
+    "photo1": {"x": 64, "y": 271},
+    "photo2": {"x": 64, "y": 700},
+    "photo3": {"x": 64, "y": 1129},
     "gap": 29,
 }
 

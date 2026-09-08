@@ -120,7 +120,7 @@ const runCaptureSequence = async () => {
 
     state.isCapturing = false;
 
-    setStatus('JE STRIP WORDT GEPRINT', true);
+    setStatus('JE FOTO\'S WORDEN GEPRINT...', true);
     progress.classList.remove('visible');
 
     try {
@@ -130,7 +130,7 @@ const runCaptureSequence = async () => {
             throw new Error(data.error || 'Finish failed');
         }
 
-        setStatus(data.message || 'TEST PRINT KLAAR', true);
+        setStatus(data.message || 'PRINT KLAAR', true);
     } catch (error) {
         setStatus(error.message || 'PRINTER NIET BESCHIKBAAR', true);
     }

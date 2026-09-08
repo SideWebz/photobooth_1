@@ -21,7 +21,7 @@ def create_session() -> dict:
     folder.mkdir(parents=True, exist_ok=True)
     current_session["folder"] = str(folder)
     current_session["photos"] = []
-    return current_session
+    return current_session 
 
 
 @app.route("/")
