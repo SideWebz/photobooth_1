@@ -1,0 +1,12 @@
+[Unit]
+Description=Photobooth
+After=network.target
+
+[Service]
+WorkingDirectory=/path/to/photobooth
+ExecStart=/path/to/photobooth/venv/bin/python /path/to/photobooth/app.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
