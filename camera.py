@@ -18,6 +18,14 @@ class CameraManager:
         self.camera_path = None
         self.last_error = "Camera not available"
         self._open_camera()
+        self._retry_thread = threading.Thread(target=self._retry_until_available, daemon=True)
+        self._retry_thread.start()
+
+    def _retry_until_available(self) -> None:
+        while True:
+            if not self.is_available():
+                self._open_camera()
+            time.sleep(10)
 
     def reset_camera(self) -> None:
         if self.camera is not None:
