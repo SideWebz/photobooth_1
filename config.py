@@ -4,7 +4,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 
-TEST_MODE = False
+TEST_MODE = True
 
 HOST = "0.0.0.0"
 PORT = 8000

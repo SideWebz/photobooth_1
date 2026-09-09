@@ -16,6 +16,8 @@ const dots = [...document.querySelectorAll('.dot')];
 const flash = document.getElementById('flash');
 const cameraFeed = document.getElementById('cameraFeed');
 const cameraLayer = document.getElementById('cameraLayer');
+const printScreen = document.getElementById('printScreen');
+const printCountdown = document.getElementById('printCountdown');
 
 const updateProgress = () => {
     dots.forEach((dot, index) => {
@@ -105,6 +107,21 @@ const runCountdown = (value) => new Promise((resolve) => {
     state.countdownTimer = setTimeout(resolve, 900);
 });
 
+const runPrintCountdown = () => new Promise((resolve) => {
+    let remaining = 10;
+    printCountdown.textContent = remaining;
+    printScreen.classList.add('visible');
+
+    const timer = setInterval(() => {
+        remaining -= 1;
+        printCountdown.textContent = remaining;
+        if (remaining === 0) {
+            clearInterval(timer);
+            resolve();
+        }
+    }, 1000);
+});
+
 const runCaptureSequence = async () => {
     state.isCapturing = true;
     for (let i = 1; i <= 3; i += 1) {
@@ -120,19 +137,21 @@ const runCaptureSequence = async () => {
 
     state.isCapturing = false;
 
-    setStatus('JE FOTO\'S WORDEN GEPRINT...', true);
     progress.classList.remove('visible');
 
     try {
-        const res = await fetch('/api/finish', { method: 'POST' });
+        const [res] = await Promise.all([
+            fetch('/api/finish', { method: 'POST' }),
+            runPrintCountdown(),
+        ]);
         const data = await res.json();
         if (!data.success) {
             throw new Error(data.error || 'Finish failed');
         }
 
-        setStatus(data.message || 'PRINT KLAAR', true);
     } catch (error) {
-        setStatus(error.message || 'PRINTER NIET BESCHIKBAAR', true);
+    } finally {
+        printScreen.classList.remove('visible');
     }
 
     setTimeout(() => {
