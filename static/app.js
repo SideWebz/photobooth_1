@@ -104,7 +104,7 @@ const runCountdown = (value) => new Promise((resolve) => {
     void countdownEl.offsetWidth;
     countdownEl.classList.add('show');
 
-    state.countdownTimer = setTimeout(resolve, 900);
+    state.countdownTimer = setTimeout(resolve, 1000);
 });
 
 const runPrintCountdown = () => new Promise((resolve) => {
@@ -127,6 +127,8 @@ const runCaptureSequence = async () => {
     for (let i = 1; i <= 3; i += 1) {
         state.photoCount = i;
         updateProgress();
+        await runCountdown(5);
+        await runCountdown(4);
         await runCountdown(3);
         await runCountdown(2);
         await runCountdown(1);
