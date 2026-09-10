@@ -18,6 +18,15 @@ const cameraFeed = document.getElementById('cameraFeed');
 const cameraLayer = document.getElementById('cameraLayer');
 const printScreen = document.getElementById('printScreen');
 const printCountdown = document.getElementById('printCountdown');
+const clock = document.getElementById('clock');
+
+const updateClock = () => {
+    clock.textContent = new Intl.DateTimeFormat('nl-BE', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+    }).format(new Date());
+};
 
 const updateProgress = () => {
     dots.forEach((dot, index) => {
@@ -108,7 +117,7 @@ const runCountdown = (value) => new Promise((resolve) => {
 });
 
 const runPrintCountdown = () => new Promise((resolve) => {
-    let remaining = 10;
+    let remaining = 20;
     printCountdown.textContent = remaining;
     printScreen.classList.add('visible');
 
@@ -177,6 +186,8 @@ cameraLayer.addEventListener('touchstart', (event) => {
 
 window.addEventListener('load', () => {
     updateCamera();
+    updateClock();
+    setInterval(updateClock, 1000);
     setStatus('EVEN GEDULD...', false);
     updateProgress();
 });

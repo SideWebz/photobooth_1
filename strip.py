@@ -40,8 +40,8 @@ def _validate_layout(template: Image.Image) -> None:
             raise ValueError("Photo layout positions do not match the configured gap")
 
 
-def _build_photo_card(photo_paths: tuple[str, ...]) -> Image.Image:
-    with Image.open(PHOTO_CARD_TEMPLATE) as template_file:
+def _build_photo_card(photo_paths: tuple[str, ...], template_path: str | Path = PHOTO_CARD_TEMPLATE) -> Image.Image:
+    with Image.open(template_path) as template_file:
         card = template_file.convert("RGBA")
 
     _validate_layout(card)
@@ -55,12 +55,13 @@ def _build_photo_card(photo_paths: tuple[str, ...]) -> Image.Image:
 def create_photo_card(
     photo_paths: Iterable[str],
     output_path: str,
+    template_path: str | Path = PHOTO_CARD_TEMPLATE,
 ) -> str:
     first_three = tuple(photo_paths)[:3]
     if len(first_three) != 3:
         raise ValueError("Exactly 3 photos are required for a PhotoCard")
 
-    card = _build_photo_card(first_three)
+    card = _build_photo_card(first_three, template_path)
     final_canvas = Image.new("RGBA", (card.width * 2, card.height))
     final_canvas.paste(card, (0, 0))
     final_canvas.paste(card, (card.width, 0))

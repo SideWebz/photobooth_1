@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -54,6 +55,16 @@ OUTPUT_DIR = BASE_DIR / "output"
 TEMPLATE_FOLDER = BASE_DIR / "templates"
 STATIC_FOLDER = BASE_DIR / "static"
 PHOTO_CARD_TEMPLATE = BASE_DIR / "PhotoCard.png"
+PHOTO_CARD_NIGHT_TEMPLATE = BASE_DIR / "PhotoCard_Night.png"
+NIGHT_START_HOUR = 0
+NIGHT_END_HOUR = 6
+
+
+def get_photo_card_template(current_hour: int | None = None) -> Path:
+    hour = datetime.now().hour if current_hour is None else current_hour
+    if NIGHT_START_HOUR <= hour < NIGHT_END_HOUR:
+        return PHOTO_CARD_NIGHT_TEMPLATE
+    return PHOTO_CARD_TEMPLATE
 
 # Alle foto-afmetingen en posities staan hier bij elkaar voor eenvoudige finetuning.
 PHOTO_LAYOUT = {

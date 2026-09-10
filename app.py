@@ -5,7 +5,7 @@ from pathlib import Path
 from flask import Flask, Response, jsonify, render_template
 
 from camera import CameraManager
-from config import OUTPUT_DIR, PHOTOS_DIR, TEST_MODE
+from config import OUTPUT_DIR, PHOTOS_DIR, TEST_MODE, get_photo_card_template
 from printer import print_strip
 from strip import create_photo_card
 
@@ -101,7 +101,7 @@ def api_finish():
     strip_path = OUTPUT_DIR / f"strip_{session_id}.jpg"
 
     try:
-        create_photo_card(photos, str(strip_path))
+        create_photo_card(photos, str(strip_path), template_path=get_photo_card_template())
     except Exception as exc:
         return jsonify({"success": False, "error": f"Strip generation failed: {exc}"}), 500
 

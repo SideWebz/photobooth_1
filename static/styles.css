@@ -189,6 +189,25 @@ body {
     pointer-events: none;
 }
 
+.clock {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    z-index: 10;
+    padding: 7px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.28);
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(6px);
+    pointer-events: none;
+}
+
 .progress {
     display: flex;
     align-items: center;
