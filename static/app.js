@@ -5,7 +5,12 @@ const state = {
     sessionStarted: false,
     countdownTimer: null,
     nextCaptureId: 1,
+    nightMode: false,
+    longPressTimer: null,
+    longPressTriggered: false,
 };
+
+const LONG_PRESS_DURATION = 15000;
 
 const overlay = document.getElementById('uiOverlay');
 const startMessage = document.getElementById('startMessage');
@@ -22,6 +27,7 @@ const clock = document.getElementById('clock');
 
 const updateClock = () => {
     clock.textContent = new Intl.DateTimeFormat('nl-BE', {
+        timeZone: 'Europe/Brussels',
         hour: '2-digit',
         minute: '2-digit',
         hour12: false,
@@ -80,11 +86,12 @@ const showCameraError = (message) => {
     setStatus(message, true);
 };
 
-const startSession = async () => {
+const startSession = async (nightMode = false) => {
     if (state.isSessionRunning) return;
     state.isSessionRunning = true;
     state.photoCount = 0;
     state.sessionStarted = true;
+    state.nightMode = nightMode;
 
     overlay.classList.remove('hidden');
     startMessage.classList.add('hidden');
@@ -152,7 +159,11 @@ const runCaptureSequence = async () => {
 
     try {
         const [res] = await Promise.all([
-            fetch('/api/finish', { method: 'POST' }),
+            fetch('/api/finish', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ night_mode: state.nightMode }),
+            }),
             runPrintCountdown(),
         ]);
         const data = await res.json();
@@ -178,11 +189,31 @@ const runCaptureSequence = async () => {
     }, 2200);
 };
 
-cameraLayer.addEventListener('click', startSession);
-cameraLayer.addEventListener('touchstart', (event) => {
-    event.preventDefault();
-    startSession();
-}, { passive: false });
+const clearLongPress = () => {
+    if (state.longPressTimer) {
+        clearTimeout(state.longPressTimer);
+        state.longPressTimer = null;
+    }
+};
+
+cameraLayer.addEventListener('pointerdown', () => {
+    state.longPressTriggered = false;
+    clearLongPress();
+    state.longPressTimer = setTimeout(() => {
+        state.longPressTriggered = true;
+        startSession(true);
+    }, LONG_PRESS_DURATION);
+});
+
+cameraLayer.addEventListener('pointerup', clearLongPress);
+cameraLayer.addEventListener('pointercancel', clearLongPress);
+cameraLayer.addEventListener('click', () => {
+    clearLongPress();
+    if (!state.longPressTriggered) {
+        startSession();
+    }
+    state.longPressTriggered = false;
+});
 
 window.addEventListener('load', () => {
     updateCamera();

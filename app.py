@@ -2,17 +2,23 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
-from flask import Flask, Response, jsonify, render_template
+from flask import Flask, Response, jsonify, render_template, request
 
 from camera import CameraManager
-from config import OUTPUT_DIR, PHOTOS_DIR, TEST_MODE, get_photo_card_template
+from config import (
+    OUTPUT_DIR,
+    PHOTOS_DIR,
+    PHOTO_CARD_NIGHT_TEMPLATE,
+    TEST_MODE,
+    get_photo_card_template,
+)
 from printer import print_strip
 from strip import create_photo_card
 
 app = Flask(__name__)
 
 camera = CameraManager()
-current_session = {"folder": None, "photos": []}
+current_session = {"folder": None, "photos": [], "night_mode": False}
 
 
 def create_session() -> dict:
@@ -21,6 +27,7 @@ def create_session() -> dict:
     folder.mkdir(parents=True, exist_ok=True)
     current_session["folder"] = str(folder)
     current_session["photos"] = []
+    current_session["night_mode"] = False
     return current_session 
 
 
@@ -100,8 +107,13 @@ def api_finish():
     session_id = session_folder.name if session_folder else datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     strip_path = OUTPUT_DIR / f"strip_{session_id}.jpg"
 
+    finish_data = request.get_json(silent=True) or {}
+    template_path = get_photo_card_template()
+    if finish_data.get("night_mode"):
+        template_path = PHOTO_CARD_NIGHT_TEMPLATE
+
     try:
-        create_photo_card(photos, str(strip_path), template_path=get_photo_card_template())
+        create_photo_card(photos, str(strip_path), template_path=template_path)
     except Exception as exc:
         return jsonify({"success": False, "error": f"Strip generation failed: {exc}"}), 500
 
@@ -112,6 +124,7 @@ def api_finish():
 
     current_session["folder"] = None
     current_session["photos"] = []
+    current_session["night_mode"] = False
 
     response = {
         "success": print_result["success"],
